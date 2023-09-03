@@ -87,7 +87,7 @@ class Player{
         noStroke();
         fill("red");
         circle(this.x, this.y, this.radius);
-        stroke("red");
+        
         // Line that shows where the player is facing
         line(this.x,
             this.y,
@@ -102,10 +102,10 @@ class Ray{
         this.rayAngle = rayAngle;
     }
     render(){
-        stroke("orange");
+        stroke("rgba(225,0,0,0.1)");
         line(player.x, player.y, 
-            player.x + Math.cos(this.rayAngle)*30,
-            player.y + Math.sin(this.rayAngle)*30    
+            player.x + Math.cos(this.rayAngle)*60,
+            player.y + Math.sin(this.rayAngle)*60    
         );
     }
 }
