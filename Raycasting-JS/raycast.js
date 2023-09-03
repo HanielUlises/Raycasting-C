@@ -1,9 +1,16 @@
 const TILE_SIZE = 32;
+// MxN size Matrix 
 const MAP_NUM_ROWS = 11;
 const MAP_NUM_COLS = 15;
-
+// This defines the window proportions
 const WINDOW_WIDTH = MAP_NUM_COLS*TILE_SIZE;
 const WINDOW_HEIGHT = MAP_NUM_ROWS*TILE_SIZE;
+// Field of view angle
+const FOV_ANGLE =  60 * (Math.PI/180);
+
+const WALL_STRIP_WIDTH = 4;
+// Rays to be <<casted>> per space
+const NUM_RAYS = WINDOW_WIDTH/WALL_STRIP_WIDTH;
 
 class Map{
     constructor(){
@@ -22,6 +29,7 @@ class Map{
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
     }
+    //Function that tells if in the actual position there's a wall
     wallExists(x,y){
         if(x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT){
             return true;
@@ -75,6 +83,7 @@ class Player{
     }
     // Player renderer
     render(){
+        // p5.js functions
         noStroke();
         fill("red");
         circle(this.x, this.y, this.radius);
@@ -87,8 +96,24 @@ class Player{
             );
     }
 }
+
+class Ray{
+    constructor(rayAngle){
+        this.rayAngle = rayAngle;
+    }
+    render(){
+        stroke("orange");
+        line(player.x, player.y, 
+            player.x + Math.cos(this.rayAngle)*30,
+            player.y + Math.sin(this.rayAngle)*30    
+        );
+    }
+}
+
 let grid = new Map();
 let player = new Player();
+let rays = [];
+
 // Moving the player
 function keyPressed(){
     if (key === 'W' || key === 'w' || keyCode === UP_ARROW){
@@ -114,6 +139,22 @@ function keyReleased(){
     }
 }
 
+function castAllRays(){
+    let columnId = 0;
+    // Start first ray substracting half of the given field of view
+    let rayAngle = player.rotationAngle - (FOV_ANGLE/2);
+    rays = [];
+    // Loop all columns casting the rays
+    for(let i = 0; i < NUM_RAYS; i++){
+        let ray = new Ray (rayAngle);
+        // TODO: ray.cast();
+        rays.push(ray);
+
+        rayAngle += FOV_ANGLE / NUM_RAYS;
+
+        columnId++;
+    }
+}
 
 function setup(){
     // Initializing all objects to be used
@@ -123,11 +164,17 @@ function setup(){
 function update(){
     // Updates all game objects before the next frame is rendered
     player.update();
+    castAllRays();
 }
 
 function draw(){
-    // Renders the objects frame by frame
     update();
+    // Renders the objects frame by frame
+    
     grid.render();
     player.render();
+
+    for(ray of rays){
+        ray.render();
+    }
 }
