@@ -106,6 +106,9 @@ class Ray{
 
         this.rayFacingDown = this.rayAngle > 0 && this.rayAngle < Math.PI;
         this.rayFacingUp = !this.rayFacingDown;
+
+        this.rayFacingRight = this.rayAngle < 0.5 * Math.PI || this.rayAngle > 1.5 * Math.PI;
+        this.rayFacingLeft = !this.rayFacingRight;
     }
     // Casting based on the current column
     cast (columnId){
@@ -114,6 +117,8 @@ class Ray{
         
         // x & y coordinates of the closest horizontal grid
         yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
+        yintercept += this.isRayFacingDown ? TILE_SIZE : 0;
+        
         xintercept = player.x + ((yintercept - player.y)/Math.tan(angle));
     }
     render(){
