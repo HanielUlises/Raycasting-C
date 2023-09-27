@@ -114,17 +114,23 @@ class Ray{
     cast (columnId){
         let xstep, ystep;
         let xintercept, yintercept;
+
+        console.log("facing right", this.rayFacingRight);
         
         // x & y coordinates of the closest horizontal grid
         yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
-        yintercept += this.isRayFacingDown ? TILE_SIZE : 0;
+        yintercept += this.rayFacingDown ? TILE_SIZE : 0;
 
         xintercept = player.x + ((yintercept - player.y)/Math.tan(this.rayAngle));
 
         // Increment of both xstep and ystep
         ystep = TILE_SIZE;
+        // Inversion if needed
+        ystep *= this.rayFacingUp ? -1 : 1;
 
         xstep = TILE_SIZE / Math.tan(this.rayAngle);
+        xstep *= (this.rayFacingLeft && xstep > 0) ? -1 : 1;
+        xstep *= (this.rayFacingRight && xstep < 0)? -1 : 1;
     }
     render(){
         stroke("rgba(225,0,0,0.1)");
@@ -164,17 +170,15 @@ function keyReleased(){
     }
 }
 
-function castAllRays(){
+function castAllRays() {
     let columnId = 0;
-    // Start first ray substracting half of the given field of view
-    let rayAngle = player.rotationAngle - (FOV_ANGLE/2);
+    // Start first ray subtracting half of the given field of view
+    let rayAngle = player.rotationAngle - (FOV_ANGLE / 2);
     rays = [];
     // Loop all columns casting the rays
-    for(let i = 0; i < NUM_RAYS; i++){
-        let ray = new Ray (rayAngle);
-        // TODO: ray.cast();
-
-        ray.cast();
+    for (let i = 0; i < NUM_RAYS; i++) {
+        let ray = new Ray(rayAngle);
+        ray.cast(columnId);
         rays.push(ray);
 
         rayAngle += FOV_ANGLE / NUM_RAYS;
@@ -184,7 +188,7 @@ function castAllRays(){
 }
 
 function normalizeAngle(angle){
-    angle = angel % (2 * Math.PI);
+    angle = angle % (2 * Math.PI);
     if (angle < 0){
         angle += (2* Math.PI);
     }
@@ -205,7 +209,6 @@ function update(){
 function draw(){
     update();
     // Renders the objects frame by frame
-    
     grid.render();
     player.render();
 
