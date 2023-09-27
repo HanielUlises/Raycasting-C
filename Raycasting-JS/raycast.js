@@ -103,6 +103,9 @@ class Ray{
         this.wallHitX = 0;
         this.wallHitY = 0;
         this.distance = 0;
+
+        this.rayFacingDown = this.rayAngle > 0 && this.rayAngle < Math.PI;
+        this.rayFacingUp = !this.rayFacingDown;
     }
     // Casting based on the current column
     cast (columnId){
