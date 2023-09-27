@@ -118,8 +118,13 @@ class Ray{
         // x & y coordinates of the closest horizontal grid
         yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
         yintercept += this.isRayFacingDown ? TILE_SIZE : 0;
-        
-        xintercept = player.x + ((yintercept - player.y)/Math.tan(angle));
+
+        xintercept = player.x + ((yintercept - player.y)/Math.tan(this.rayAngle));
+
+        // Increment of both xstep and ystep
+        ystep = TILE_SIZE;
+
+        xstep = TILE_SIZE / Math.tan(this.rayAngle);
     }
     render(){
         stroke("rgba(225,0,0,0.1)");
