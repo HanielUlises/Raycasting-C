@@ -99,7 +99,19 @@ class Player{
 
 class Ray{
     constructor(rayAngle){
-        this.rayAngle = rayAngle;
+        this.rayAngle = normalizeAngle(rayAngle);
+        this.wallHitX = 0;
+        this.wallHitY = 0;
+        this.distance = 0;
+    }
+    // Casting based on the current column
+    cast (columnId){
+        let xstep, ystep;
+        let xintercept, yintercept;
+        
+        // x & y coordinates of the closest horizontal grid
+        yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
+        xintercept = player.x + ((yintercept - player.y)/Math.tan(angle));
     }
     render(){
         stroke("rgba(225,0,0,0.1)");
@@ -148,12 +160,22 @@ function castAllRays(){
     for(let i = 0; i < NUM_RAYS; i++){
         let ray = new Ray (rayAngle);
         // TODO: ray.cast();
+
+        ray.cast();
         rays.push(ray);
 
         rayAngle += FOV_ANGLE / NUM_RAYS;
 
         columnId++;
     }
+}
+
+function normalizeAngle(angle){
+    angle = angel % (2 * Math.PI);
+    if (angle < 0){
+        angle += (2* Math.PI);
+    }
+    return angle;
 }
 
 function setup(){
