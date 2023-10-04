@@ -239,9 +239,12 @@ function draw(){
     update();
     // Renders the objects frame by frame
     grid.render();
-    player.render();
 
     for(ray of rays){
         ray.render();
     }
+
+    player.render();
+
+    castAllRays();
 }
