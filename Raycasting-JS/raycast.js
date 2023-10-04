@@ -155,8 +155,8 @@ class Ray{
                 break;
 
             }else{
-                nextHorzTouchX += xstep;
-                nextHorzTouchY += ystep;
+                nextHorizTouchX += xstep;
+                nextHorizTouchY += ystep;
             }
         }
 
