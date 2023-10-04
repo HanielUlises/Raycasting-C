@@ -115,7 +115,10 @@ class Ray{
         let xstep, ystep;
         let xintercept, yintercept;
 
-        console.log("facing right", this.rayFacingRight);
+        let foundHorizWallHit = false;
+        let wallHitX = 0;
+        let wallHitY = 0;
+
         
         // x & y coordinates of the closest horizontal grid
         yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
@@ -131,6 +134,32 @@ class Ray{
         xstep = TILE_SIZE / Math.tan(this.rayAngle);
         xstep *= (this.rayFacingLeft && xstep > 0) ? -1 : 1;
         xstep *= (this.rayFacingRight && xstep < 0)? -1 : 1;
+
+        let nextHorizTouchX = xintercept;
+        let nextHorizTouchY = yintercept;
+
+        if (this.rayFacingUp) nextHorizTouchY--;
+
+        // Incremente XStep and Ystep unitl a wall is found
+
+        while (nextHorizTouchX >= 0 && nextHorizTouchX <= WINDOW_WIDTH && nextHorizTouchY >= 0 && nextHorizTouchY <= WINDOW_HEIGHT){
+            if (grid.wallExists(nextHorizTouchX, nextHorizTouchY)) {
+                // A wall is found
+                foundHorizWallHit = true;
+                wallHitX = nextHorizTouchX;
+                wallHitY = nextHorizTouchY;
+
+                stroke("red");
+                line (player.x, player.y, wallHitX, wallHitY);
+
+                break;
+
+            }else{
+                nextHorzTouchX += xstep;
+                nextHorzTouchY += ystep;
+            }
+        }
+
     }
     render(){
         stroke("rgba(225,0,0,0.1)");
