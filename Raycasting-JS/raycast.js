@@ -164,43 +164,43 @@ class Ray{
         let verticalWallHitY = 0;
 
         
-        // x & y coordinates of the closest horizontal grid
-        yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
-        yintercept += this.rayFacingDown ? TILE_SIZE : 0;
+        // x & y coordinates of the closest vertical grid intersection
+        xintercept = Math.floor(player.x/TILE_SIZE) * TILE_SIZE;
+        xintercept += this.rayFacingDown ? TILE_SIZE : 0;
 
-        xintercept = player.x + ((yintercept - player.y)/Math.tan(this.rayAngle));
+        yintercept = player.y + ((xintercept - player.x) * Math.tan(this.rayAngle));
 
         // Increment of both xstep and ystep
-        ystep = TILE_SIZE;
+        xstep = TILE_SIZE;
         // Inversion if needed
-        ystep *= this.rayFacingUp ? -1 : 1;
+        xstep *= this.rayFacingUp ? -1 : 1;
 
-        xstep = TILE_SIZE / Math.tan(this.rayAngle);
-        xstep *= (this.rayFacingLeft && xstep > 0) ? -1 : 1;
-        xstep *= (this.rayFacingRight && xstep < 0)? -1 : 1;
+        ystep = TILE_SIZE * Math.tan(this.rayAngle);
+        ystep *= (this.rayFacingUp && ystep > 0) ? -1 : 1;
+        ystep *= (this.rayFacingDown && ystep < 0)? -1 : 1;
 
-        let nextHorizTouchX = xintercept;
-        let nextHorizTouchY = yintercept;
+        let nextVertTouchX = xintercept;
+        let nextVertTouchY = yintercept;
 
-        if (this.rayFacingUp) nextHorizTouchY--;
+        if (this.rayFacingUp) nextVertTouchY--;
 
         // Incremente XStep and Ystep unitl a wall is found
 
-        while (nextHorizTouchX >= 0 && nextHorizTouchX <= WINDOW_WIDTH && nextHorizTouchY >= 0 && nextHorizTouchY <= WINDOW_HEIGHT){
-            if (grid.wallExists(nextHorizTouchX, nextHorizTouchY)) {
+        while (nextVertTouchX >= 0 && nextVertTouchX <= WINDOW_WIDTH && nextHorizTouchY >= 0 && nextHorizTouchY <= WINDOW_HEIGHT){
+            if (grid.wallExists(nextVertTouchX, nextHorizTouchY)) {
                 // A wall is found
                 foundHorizWallHit = true;
-                wallHitX = nextHorizTouchX;
-                wallHitY = nextHorizTouchY;
+                verticalWallHitX = nextVertTouchX;
+                verticalWallHitY = nextHorizTouchY;
 
                 stroke("red");
-                line (player.x, player.y, wallHitX, wallHitY);
+                line (player.x, player.y, verticalWallHitX, verticalWallHitY);
 
                 break;
 
             }else{
-                nextHorizTouchX += xstep;
-                nextHorizTouchY += ystep;
+                nextVertTouchX += xstep;
+                nextVertTouchY += ystep;
             }
         }
     }
