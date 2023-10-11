@@ -203,6 +203,19 @@ class Ray{
                 nextVertTouchY += ystep;
             }
         }
+        // Calculate both horizontal and vertical distances and take the smallest value
+        let horzHitDistance = (foundHorizWallHit) 
+        ? pointsDistance(player.x, player.y, horizWallHitX, horizWallHitY)
+        : Number.MAX_VALUE;
+
+        let vertHitDistance = (foundHorizWallHit) 
+        ? pointsDistance(player.x, player.y, verticalWallHitX, verticalWallHitY)
+        : Number.MAX_VALUE;
+
+        this.wallHitX = (horzHitDistance < vertHitDistance) ? horizWallHitX : verticalWallHitX;
+        this.wallHitY = (horzHitDistance < vertHitDistance) ? horizWallHitY  : verticalWallHitY;
+
+        this.distance = (horzHitDistance < vertHitDistance) ? horzHitDistance : vertHitDistance;
     }
 
     render(){
@@ -212,6 +225,10 @@ class Ray{
             player.y + Math.sin(this.rayAngle)*60    
         );
     }
+
+   
+
+    
 }
 
 let grid = new Map();
@@ -258,6 +275,10 @@ function castAllRays() {
 
         columnId++;
     }
+}
+
+function pointsDistance(x1, y1, x2, y2){
+    return Math.sqrt((x2-x1)*(x2-x1) +(y2-y1)*(y2-y1));
 }
 
 function normalizeAngle(angle){
