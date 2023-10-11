@@ -182,16 +182,16 @@ class Ray{
         let nextVertTouchX = xintercept;
         let nextVertTouchY = yintercept;
 
-        if (this.rayFacingUp) nextVertTouchY--;
+        if (this.rayFacingLeft) nextVertTouchX--;
 
         // Incremente XStep and Ystep unitl a wall is found
 
         while (nextVertTouchX >= 0 && nextVertTouchX <= WINDOW_WIDTH && nextHorizTouchY >= 0 && nextHorizTouchY <= WINDOW_HEIGHT){
             if (grid.wallExists(nextVertTouchX, nextHorizTouchY)) {
                 // A wall is found
-                foundHorizWallHit = true;
+                foundVertWallHit = true;
                 verticalWallHitX = nextVertTouchX;
-                verticalWallHitY = nextHorizTouchY;
+                verticalWallHitY = nextVertTouchY;
 
                 stroke("red");
                 line (player.x, player.y, verticalWallHitX, verticalWallHitY);
