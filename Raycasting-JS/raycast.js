@@ -116,8 +116,52 @@ class Ray{
         let xintercept, yintercept;
 
         let foundHorizWallHit = false;
-        let wallHitX = 0;
-        let wallHitY = 0;
+        let horizWallHitX = 0;
+        let horizWallHitY = 0;
+
+        
+        // x & y coordinates of the closest horizontal grid
+        yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
+        yintercept += this.rayFacingDown ? TILE_SIZE : 0;
+
+        xintercept = player.x + ((yintercept - player.y)/Math.tan(this.rayAngle));
+
+        // Increment of both xstep and ystep
+        ystep = TILE_SIZE;
+        // Inversion if needed
+        ystep *= this.rayFacingUp ? -1 : 1;
+
+        xstep = TILE_SIZE / Math.tan(this.rayAngle);
+        xstep *= (this.rayFacingLeft && xstep > 0) ? -1 : 1;
+        xstep *= (this.rayFacingRight && xstep < 0)? -1 : 1;
+
+        let nextHorizTouchX = xintercept;
+        let nextHorizTouchY = yintercept;
+
+        if (this.rayFacingUp) nextHorizTouchY--;
+
+        // Incremente XStep and Ystep unitl a wall is found
+
+        while (nextHorizTouchX >= 0 && nextHorizTouchX <= WINDOW_WIDTH && nextHorizTouchY >= 0 && nextHorizTouchY <= WINDOW_HEIGHT){
+            if (grid.wallExists(nextHorizTouchX, nextHorizTouchY)) {
+                // A wall is found
+                foundHorizWallHit = true;
+                horizWallHitX = nextHorizTouchX;
+                horizWallHitY = nextHorizTouchY;
+
+                stroke("red");
+                line (player.x, player.y, horizWallHitX, horizWallHitY);
+
+                break;
+
+            }else{
+                nextHorizTouchX += xstep;
+                nextHorizTouchY += ystep;
+            }
+        }
+        let foundVertWallHit = false;
+        let verticalWallHitX = 0;
+        let verticalWallHitY = 0;
 
         
         // x & y coordinates of the closest horizontal grid
@@ -159,8 +203,8 @@ class Ray{
                 nextHorizTouchY += ystep;
             }
         }
-
     }
+
     render(){
         stroke("rgba(225,0,0,0.1)");
         line(player.x, player.y, 
