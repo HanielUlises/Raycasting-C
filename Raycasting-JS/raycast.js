@@ -60,8 +60,8 @@ class Player{
         this.x = WINDOW_WIDTH/2;
         this.y = WINDOW_HEIGHT/2;
         this.radius = 6;
-        this.turnDirection = 0; // -1 if left, +1 if right
-        this.walkDirection = 0; // -1 if back, +1 if front
+        this.turnDirection = 0; // -1 for left, +1 for right
+        this.walkDirection = 0; // -1 for back, +1 for front
         this.rotationAngle = Math.PI/2;
         this.moveSpeed = 2.0;
         this.rotationSpeed = 2 * (Math.PI/180);
@@ -72,6 +72,7 @@ class Player{
 
         // Increasing or decreasing the moving pixels
         let moveStep = this.walkDirection*this.moveSpeed;
+        
         let newX = this.x + Math.cos(this.rotationAngle)*moveStep;
         let newY = this.y + Math.sin(this.rotationAngle)*moveStep;
         // Collision with walls
@@ -103,6 +104,7 @@ class Ray{
         this.wallHitX = 0;
         this.wallHitY = 0;
         this.distance = 0;
+        this.wasHitVertical = false;
 
         this.rayFacingDown = this.rayAngle > 0 && this.rayAngle < Math.PI;
         this.rayFacingUp = !this.rayFacingDown;
@@ -151,9 +153,7 @@ class Ray{
 
                 stroke("red");
                 line (player.x, player.y, horizWallHitX, horizWallHitY);
-
                 break;
-
             }else{
                 nextHorizTouchX += xstep;
                 nextHorizTouchY += ystep;
@@ -166,7 +166,7 @@ class Ray{
         
         // x & y coordinates of the closest vertical grid intersection
         xintercept = Math.floor(player.x/TILE_SIZE) * TILE_SIZE;
-        xintercept += this.rayFacingDown ? TILE_SIZE : 0;
+        xintercept += this.rayFacingRight ? TILE_SIZE : 0;
 
         yintercept = player.y + ((xintercept - player.x) * Math.tan(this.rayAngle));
 
@@ -187,7 +187,7 @@ class Ray{
         // Incremente XStep and Ystep unitl a wall is found
 
         while (nextVertTouchX >= 0 && nextVertTouchX <= WINDOW_WIDTH && nextHorizTouchY >= 0 && nextHorizTouchY <= WINDOW_HEIGHT){
-            if (grid.wallExists(nextVertTouchX, nextHorizTouchY)) {
+            if (grid.wallExists(nextVertTouchX, nextVertTouchY)) {
                 // A wall is found
                 foundVertWallHit = true;
                 verticalWallHitX = nextVertTouchX;
@@ -208,27 +208,28 @@ class Ray{
         ? pointsDistance(player.x, player.y, horizWallHitX, horizWallHitY)
         : Number.MAX_VALUE;
 
-        let vertHitDistance = (foundHorizWallHit) 
+        let vertHitDistance = (foundVertWallHit) 
         ? pointsDistance(player.x, player.y, verticalWallHitX, verticalWallHitY)
         : Number.MAX_VALUE;
 
+        // Just store the smallest of the distance
         this.wallHitX = (horzHitDistance < vertHitDistance) ? horizWallHitX : verticalWallHitX;
         this.wallHitY = (horzHitDistance < vertHitDistance) ? horizWallHitY  : verticalWallHitY;
 
         this.distance = (horzHitDistance < vertHitDistance) ? horzHitDistance : vertHitDistance;
+
+        this.wasHitVertical = (vertHitDistance < horzHitDistance);
     }
 
     render(){
         stroke("rgba(225,0,0,0.1)");
         line(player.x, player.y, 
             player.x + Math.cos(this.rayAngle)*60,
-            player.y + Math.sin(this.rayAngle)*60    
+            player.y + Math.sin(this.rayAngle)*60,
+            this.wallHitX,
+            this.wallHitY    
         );
-    }
-
-   
-
-    
+    }   
 }
 
 let grid = new Map();
