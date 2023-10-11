@@ -159,10 +159,10 @@ class Ray{
                 nextHorizTouchY += ystep;
             }
         }
+
         let foundVertWallHit = false;
         let verticalWallHitX = 0;
         let verticalWallHitY = 0;
-
         
         // x & y coordinates of the closest vertical grid intersection
         xintercept = Math.floor(player.x/TILE_SIZE) * TILE_SIZE;
@@ -223,9 +223,8 @@ class Ray{
 
     render(){
         stroke("rgba(225,0,0,0.1)");
-        line(player.x, player.y, 
-            player.x + Math.cos(this.rayAngle)*60,
-            player.y + Math.sin(this.rayAngle)*60,
+        line(player.x, 
+            player.y, 
             this.wallHitX,
             this.wallHitY    
         );
