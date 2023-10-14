@@ -119,7 +119,6 @@ class Ray{
         let foundHorizWallHit = false;
         let horizWallHitX = 0;
         let horizWallHitY = 0;
-
         
         // x & y coordinates of the closest horizontal grid
         yintercept = Math.floor(player.y/TILE_SIZE) * TILE_SIZE;
@@ -158,6 +157,8 @@ class Ray{
                 nextHorizTouchY += ystep;
             }
         }
+
+        // Vertical intersection
         let foundVertWallHit = false;
         let verticalWallHitX = 0;
         let verticalWallHitY = 0;
@@ -172,7 +173,7 @@ class Ray{
         // Increment of both xstep and ystep
         xstep = TILE_SIZE;
         // Inversion if needed
-        xstep *= this.rayFacingUp ? -1 : 1;
+        xstep *= this.rayFacingLeft ? -1 : 1;
 
         ystep = TILE_SIZE * Math.tan(this.rayAngle);
         ystep *= (this.rayFacingUp && ystep > 0) ? -1 : 1;
@@ -214,14 +215,14 @@ class Ray{
         // Just store the smallest of the distance
         this.wallHitX = (horzHitDistance < vertHitDistance) ? horizWallHitX : verticalWallHitX;
         this.wallHitY = (horzHitDistance < vertHitDistance) ? horizWallHitY  : verticalWallHitY;
-
+        // Distance between two points
         this.distance = (horzHitDistance < vertHitDistance) ? horzHitDistance : vertHitDistance;
 
         this.wasHitVertical = (vertHitDistance < horzHitDistance);
     }
 
     render(){
-        stroke("rgba(225,0,0,0.4)");
+        stroke("rgba(225,0,0,0.1)");
         line(player.x, player.y, 
             this.wallHitX,
             this.wallHitY    
@@ -232,6 +233,18 @@ class Ray{
 let grid = new Map();
 let player = new Player();
 let rays = [];
+
+function normalizeAngle(angle){
+    angle = angle % (2 * Math.PI);
+    if (angle < 0){
+        angle += (2* Math.PI);
+    }
+    return angle;
+}
+
+function pointsDistance(x1, y1, x2, y2){
+    return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+}
 
 // Moving the player
 function keyPressed(){
@@ -273,18 +286,6 @@ function castAllRays() {
 
         columnId++;
     }
-}
-
-function normalizeAngle(angle){
-    angle = angle % (2 * Math.PI);
-    if (angle < 0){
-        angle += (2* Math.PI);
-    }
-    return angle;
-}
-
-function pointsDistance(x1, y1, x2, y2){
-    return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
 
 function setup(){
