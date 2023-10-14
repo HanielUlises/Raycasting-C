@@ -80,7 +80,6 @@ class Player{
            this.x = newX;
            this.y = newY; 
         }
-        
     }
     // Player renderer
     render(){
@@ -90,11 +89,11 @@ class Player{
         circle(this.x, this.y, this.radius);
         
         // Line that shows where the player is facing
-        line(this.x,
-            this.y,
-            this.x + Math.cos(this.rotationAngle)*30,
-            this.y + Math.sin(this.rotationAngle)*30
-            );
+        // line(this.x,
+        //     this.y,
+        //     this.x + Math.cos(this.rotationAngle)*30,
+        //     this.y + Math.sin(this.rotationAngle)*30
+        //     );
     }
 }
 
@@ -151,8 +150,8 @@ class Ray{
                 horizWallHitX = nextHorizTouchX;
                 horizWallHitY = nextHorizTouchY;
 
-                stroke("red");
-                line (player.x, player.y, horizWallHitX, horizWallHitY);
+                // stroke("red");
+                // line (player.x, player.y, horizWallHitX, horizWallHitY);
                 break;
             }else{
                 nextHorizTouchX += xstep;
@@ -193,8 +192,8 @@ class Ray{
                 verticalWallHitX = nextVertTouchX;
                 verticalWallHitY = nextVertTouchY;
 
-                stroke("red");
-                line (player.x, player.y, verticalWallHitX, verticalWallHitY);
+                // stroke("red");
+                // line (player.x, player.y, verticalWallHitX, verticalWallHitY);
 
                 break;
 
@@ -222,10 +221,8 @@ class Ray{
     }
 
     render(){
-        stroke("rgba(225,0,0,0.1)");
+        stroke("rgba(225,0,0,0.4)");
         line(player.x, player.y, 
-            player.x + Math.cos(this.rayAngle)*60,
-            player.y + Math.sin(this.rayAngle)*60,
             this.wallHitX,
             this.wallHitY    
         );
@@ -278,16 +275,16 @@ function castAllRays() {
     }
 }
 
-function pointsDistance(x1, y1, x2, y2){
-    return Math.sqrt((x2-x1)*(x2-x1) +(y2-y1)*(y2-y1));
-}
-
 function normalizeAngle(angle){
     angle = angle % (2 * Math.PI);
     if (angle < 0){
         angle += (2* Math.PI);
     }
     return angle;
+}
+
+function pointsDistance(x1, y1, x2, y2){
+    return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
 
 function setup(){
