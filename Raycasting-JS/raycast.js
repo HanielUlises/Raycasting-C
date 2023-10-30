@@ -333,6 +333,8 @@ function update(){
 }
 
 function draw(){
+    // Clearing the walls so they wont stuck in frame :p
+    clear("#212121");
     update();
     // Renders the objects frame by frame
     grid.render();
