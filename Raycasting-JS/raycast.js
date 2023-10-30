@@ -8,7 +8,7 @@ const WINDOW_HEIGHT = MAP_NUM_ROWS*TILE_SIZE;
 // Field of view angle
 const FOV_ANGLE =  60 * (Math.PI/180);
 
-const WALL_STRIP_WIDTH = 4;
+const WALL_STRIP_WIDTH = 1;
 // Rays to be <<casted>> per space
 const NUM_RAYS = WINDOW_WIDTH/WALL_STRIP_WIDTH;
 
@@ -251,7 +251,7 @@ function projection3D(){
     // Looping through every ray in the array
     for (let i = 0; i < NUM_RAYS; i++){
         let ray = rays[i];
-        let rayDistance = ray.distance;
+        let rayDistance = ray.distance * Math.cos(ray.rayAngle - player.rotationAngle);
         // Player's distance from the projection plane
         let distanceProjectionPlane = (WINDOW_WIDTH / 2) / Math.tan(FOV_ANGLE/2);
         let wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
@@ -337,8 +337,9 @@ function draw(){
     clear("#212121");
     update();
     // Renders the objects frame by frame
-    grid.render();
     projection3D();
+    grid.render();
+    
 
     for(ray of rays){
         ray.render();
