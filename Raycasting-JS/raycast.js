@@ -247,6 +247,26 @@ let grid = new Map();
 let player = new Player();
 let rays = [];
 
+function projection3D(){
+    // Looping through every ray in the array
+    for (let i = 0; i < NUM_RAYS; i++){
+        let ray = rays[i];
+        let rayDistance = ray.distance;
+        // Player's distance from the projection plane
+        let distanceProjectionPlane = (WINDOW_WIDTH / 2) / Math.tan(FOV_ANGLE/2);
+        let wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
+
+        fill("rgba(255,255,255,1.0)");
+        noStroke();
+        rect(
+            i * WALL_STRIP_WIDTH,
+            (WINDOW_HEIGHT / 2) - (wallStripHeight / 2),
+            WALL_STRIP_WIDTH,
+            wallStripHeight
+        );
+    }
+}
+
 function normalizeAngle(angle){
     angle = angle % (2 * Math.PI);
     if (angle < 0){
@@ -254,7 +274,7 @@ function normalizeAngle(angle){
     }
     return angle;
 }
-
+// Euclidean distance
 function pointsDistance(x1, y1, x2, y2){
     return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
@@ -316,6 +336,7 @@ function draw(){
     update();
     // Renders the objects frame by frame
     grid.render();
+    projection3D();
 
     for(ray of rays){
         ray.render();
