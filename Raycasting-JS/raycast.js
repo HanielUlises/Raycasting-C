@@ -256,7 +256,10 @@ function projection3D(){
         let distanceProjectionPlane = (WINDOW_WIDTH / 2) / Math.tan(FOV_ANGLE/2);
         let wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
 
-        fill("rgba(255,255,255,1.0)");
+        // Distance of a wall from the player 
+        let alpha = 60 / rayDistance;
+
+        fill("rgba(255,255,255," + alpha + ")");
         noStroke();
         rect(
             i * WALL_STRIP_WIDTH,
