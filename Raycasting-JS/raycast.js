@@ -123,7 +123,7 @@ class Ray{
         this.rayFacingLeft = !this.rayFacingRight;
     }
     // Casting based on the current column
-    cast (columnId){
+    cast (){
         let xstep, ystep;
         let xintercept, yintercept;
 
@@ -223,13 +223,25 @@ class Ray{
         ? pointsDistance(player.x, player.y, verticalWallHitX, verticalWallHitY)
         : Number.MAX_VALUE;
 
-        // Just store the smallest of the distance
-        this.wallHitX = (horzHitDistance < vertHitDistance) ? horizWallHitX : verticalWallHitX;
-        this.wallHitY = (horzHitDistance < vertHitDistance) ? horizWallHitY  : verticalWallHitY;
-        // Distance between two points
-        this.distance = (horzHitDistance < vertHitDistance) ? horzHitDistance : vertHitDistance;
+        if(vertHitDistance < horzHitDistance){
+            this.wallHitX = verticalWallHitX;
+            this.wallHitY = verticalWallHitY;
+            this.distance = vertHitDistance;
+            this.wasHitVertical = true;
+        }else{
+            this.wallHitX = horizWallHitX;
+            this.wallHitY = horizWallHitY;
+            this.distance = horzHitDistance;
+            this.wasHitVertical = false;
+        }
 
-        this.wasHitVertical = (vertHitDistance < horzHitDistance);
+        // // Just store the smallest of the distance
+        // this.wallHitX = (horzHitDistance < vertHitDistance) ? horizWallHitX : verticalWallHitX;
+        // this.wallHitY = (horzHitDistance < vertHitDistance) ? horizWallHitY  : verticalWallHitY;
+        // // Distance between two points
+        // this.distance = (horzHitDistance < vertHitDistance) ? horzHitDistance : vertHitDistance;
+
+        // this.wasHitVertical = (vertHitDistance < horzHitDistance);
     }
 
     render(){
@@ -257,9 +269,11 @@ function projection3D(){
         let wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
 
         // Distance of a wall from the player 
-        let alpha = 60 / rayDistance;
+        let alpha = 90 / rayDistance;
 
-        fill("rgba(255,255,255," + alpha + ")");
+        let intensity = ray.wasHitVertical ? 255 : 180;
+
+        fill("rgba("+ intensity + "," + intensity +","+intensity + "," + alpha + ")");
         noStroke();
         rect(
             i * WALL_STRIP_WIDTH,
@@ -308,19 +322,17 @@ function keyReleased(){
 }
 
 function castAllRays() {
-    let columnId = 0;
+
     // Start first ray subtracting half of the given field of view
     let rayAngle = player.rotationAngle - (FOV_ANGLE / 2);
     rays = [];
     // Loop all columns casting the rays
-    for (let i = 0; i < NUM_RAYS; i++) {
+    for (let currCol = 0; currCol < NUM_RAYS; currCol++) {
         let ray = new Ray(rayAngle);
-        ray.cast(columnId);
+        ray.cast();
         rays.push(ray);
 
         rayAngle += FOV_ANGLE / NUM_RAYS;
-
-        columnId++;
     }
 }
 
