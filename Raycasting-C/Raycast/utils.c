@@ -4,6 +4,7 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
 int playerX, playerY;
+int lastFrameT = 0;
 
 int initializeWindow() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != FALSE) { 
@@ -72,6 +73,16 @@ void setup() {
 }
 
 void update() {
-    playerX++;
-    playerY++;
+    // Waste some time until the goal frame is reached
+    int timeToWait = FRAME_TIME_LENGTH - (SDL_GetTicks() - lastFrameT);
+
+    if (timeToWait > 0 && timeToWait <= FRAME_TIME_LENGTH) {
+        SDL_Delay(timeToWait);
+    }
+
+    float deltaTime = (SDL_GetTicks() - lastFrameT)/1000.0f;
+    lastFrameT = SDL_GetTicks();
+
+    playerX += 50 * deltaTime;
+    playerY += 50 * deltaTime;
 }
