@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #pragma once
 
 #include "stdio.h"
@@ -5,11 +8,16 @@
 
 #define TRUE 1
 #define FALSE 0
-#define WINDOW_WIDHT 800
+#define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
 
-void initializeWindow();
+int initializeWindow();
 void destroyWindow();
+void render();
+void processInput(int * gameRunning);
+void setup();
+
+#endif
