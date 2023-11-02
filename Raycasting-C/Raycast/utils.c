@@ -3,6 +3,24 @@
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
+const int map[NUM_ROWS][NUM_COLS] = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+};
+
+
 int playerX, playerY;
 int lastFrameT = 0;
 
@@ -47,8 +65,32 @@ void render() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
     SDL_Rect rect = { playerX, playerY, 20, 20 };
 
+    renderMap();
+    //renderRays();
+
     SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
+
+    
+}
+
+void renderMap() {
+    for (int i = 0; i < NUM_ROWS; i++) {
+        for (int j = 0; j < NUM_COLS; j++) {
+            int tileX = j * TILE_SIZE;
+            int tileY = i * TILE_SIZE;
+            int tileColor = map[i][j] != 0 ? 255 : 0;
+
+            SDL_SetRenderDrawColor(renderer, tileColor, tileColor, tileColor, 255);
+            SDL_Rect mapTile = {
+                tileX,
+                tileY,
+                TILE_SIZE,
+                TILE_SIZE
+            };
+            SDL_RenderFillRect(renderer, &mapTile);
+        }
+    }
 }
 
 void processInput(int *gameRunning) {
@@ -67,9 +109,16 @@ void processInput(int *gameRunning) {
     }
 }
 
-void setup() {
-    playerX = 0;
-    playerY = 0;
+void playerConstructor() {
+    player.x = WINDOW_WIDTH / 2;
+    player.y = WINDOW_HEIGHT / 2;
+    player.width = 5;
+    player.height = 5;
+    player.turnDirection = 0;
+    player.walkDirection = 0;
+    player.angle = PI / 2;
+    player.walkSpeed = 100;
+    player.turnSpeed = 45 * (PI / 180);
 }
 
 void update() {
