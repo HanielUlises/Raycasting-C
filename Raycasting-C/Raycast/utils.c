@@ -20,8 +20,6 @@ const int map[NUM_ROWS][NUM_COLS] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-
-int playerX, playerY;
 int lastFrameT = 0;
 
 int initializeWindow() {
@@ -63,12 +61,12 @@ void render() {
     SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    SDL_Rect rect = { playerX, playerY, 20, 20 };
+    //SDL_Rect rect = { playerX, playerY, 20, 20 };
 
     renderMap();
     //renderRays();
 
-    SDL_RenderFillRect(renderer, &rect);
+    //SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
 
     
@@ -83,10 +81,10 @@ void renderMap() {
 
             SDL_SetRenderDrawColor(renderer, tileColor, tileColor, tileColor, 255);
             SDL_Rect mapTile = {
-                tileX,
-                tileY,
-                TILE_SIZE,
-                TILE_SIZE
+                tileX * SCALE,
+                tileY * SCALE,
+                TILE_SIZE * SCALE,
+                TILE_SIZE * SCALE
             };
             SDL_RenderFillRect(renderer, &mapTile);
         }
@@ -131,7 +129,4 @@ void update() {
 
     float deltaTime = (SDL_GetTicks() - lastFrameT)/1000.0f;
     lastFrameT = SDL_GetTicks();
-
-    playerX += 50 * deltaTime;
-    playerY += 50 * deltaTime;
 }

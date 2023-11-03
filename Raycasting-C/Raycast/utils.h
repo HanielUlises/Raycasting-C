@@ -24,6 +24,8 @@
 #define FPS 30
 #define FRAME_TIME_LENGTH (1000/FPS)
 
+#define SCALE 0.3   // Minimap proportion
+
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 
