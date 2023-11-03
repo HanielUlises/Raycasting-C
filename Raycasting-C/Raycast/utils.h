@@ -56,4 +56,7 @@ void movePlayer(float);
 void handleEvents(int*);
 void playerConstructor();
 
+// Determines if there's a wall at the player's position
+// Important for collition
+int wallExists(float x, float y);
 #endif

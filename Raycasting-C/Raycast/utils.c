@@ -55,6 +55,29 @@ int initializeWindow() {
 void destroyWindow() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+void playerConstructor() {
+    player.x = WINDOW_WIDTH / 2;
+    player.y = WINDOW_HEIGHT / 2;
+    player.width = 5;
+    player.height = 5;
+    player.turnDirection = 0;
+    player.walkDirection = 0;
+    player.angle = PI / 2;
+    player.walkSpeed = 100;
+    player.turnSpeed = 45 * (PI / 180);
+}
+
+int wallExists(float x, float y) {
+    if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT) {
+        return TRUE;
+    }
+    int mapIndexX = floor(x / TILE_SIZE);
+    int mapIndexY = floor(y / TILE_SIZE);
+
+    return map[mapIndexY][mapIndexX] != 0;
 }
 
 void movePlayer(float deltaTime) {
@@ -65,8 +88,11 @@ void movePlayer(float deltaTime) {
     float newPlayerY = player.y + sin(player.angle) * moveStep;
 
     // Update position
-    player.x = newPlayerX;
-    player.y = newPlayerY;
+    if (!wallExists(newPlayerX, newPlayerY)) {
+        player.x = newPlayerX;
+        player.y = newPlayerY;
+    }
+    
 }
 
 void renderPlayer() {
@@ -122,9 +148,9 @@ void handleEvents(int *gameRunning) {
             player.walkDirection = +1;
         if (ev.key.keysym.sym ==  SDLK_s)
             player.walkDirection = -1;
-        if (ev.key.keysym.sym ==  SDLK_a)
-            player.turnDirection = +1;
         if (ev.key.keysym.sym ==  SDLK_d)
+            player.turnDirection = +1;
+        if (ev.key.keysym.sym ==  SDLK_a)
             player.turnDirection = -1;
         break;
     }
@@ -140,18 +166,6 @@ void handleEvents(int *gameRunning) {
         break;
     }
     }
-}
-
-void playerConstructor() {
-    player.x = WINDOW_WIDTH / 2;
-    player.y = WINDOW_HEIGHT / 2;
-    player.width = 5;
-    player.height = 5;
-    player.turnDirection = 0;
-    player.walkDirection = 0;
-    player.angle = PI / 2;
-    player.walkSpeed = 50;
-    player.turnSpeed = 45 * (PI / 180);
 }
 
 void update() {
