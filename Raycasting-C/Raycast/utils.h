@@ -39,7 +39,7 @@ struct Player{
     int turnDirection;
     int walkDirection;
 
-    float angle;    //Rotation Angle
+    float angle;    // Rotation Angle
     float walkSpeed;
     float turnSpeed;
 }player;
@@ -50,8 +50,10 @@ void destroyWindow();
 
 void render();
 void renderMap();
+void renderPlayer();
+void movePlayer(float);
 
-void processInput(int* gameRunning);
+void handleEvents(int*);
 void playerConstructor();
 
 #endif

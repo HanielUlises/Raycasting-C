@@ -20,6 +20,7 @@ const int map[NUM_ROWS][NUM_COLS] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
+// Number of ticks since the last frame
 int lastFrameT = 0;
 
 int initializeWindow() {
@@ -56,20 +57,35 @@ void destroyWindow() {
     SDL_DestroyWindow(window);
 }
 
-void render() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+void movePlayer(float deltaTime) {
+    player.angle += player.turnDirection * player.turnSpeed * deltaTime;
+    float moveStep = player.walkDirection * player.walkSpeed * deltaTime;
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    //SDL_Rect rect = { playerX, playerY, 20, 20 };
+    float newPlayerX = player.x + cos(player.angle) * moveStep;
+    float newPlayerY = player.y + sin(player.angle) * moveStep;
 
-    renderMap();
-    //renderRays();
+    // Update position
+    player.x = newPlayerX;
+    player.y = newPlayerY;
+}
 
-    //SDL_RenderFillRect(renderer, &rect);
-    SDL_RenderPresent(renderer);
+void renderPlayer() {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_Rect pRect = {
+        player.x * SCALE,
+        player.y * SCALE,
+        player.width * SCALE,
+        player.height * SCALE
+    };
 
-    
+    SDL_RenderFillRect(renderer, &pRect);
+    SDL_RenderDrawLine(
+        renderer,
+        player.x * SCALE,
+        player.y * SCALE,
+        SCALE * player.x + cos(player.angle) * 40 ,
+        SCALE * player.y + sin(player.angle) * 40
+    );
 }
 
 void renderMap() {
@@ -91,7 +107,7 @@ void renderMap() {
     }
 }
 
-void processInput(int *gameRunning) {
+void handleEvents(int *gameRunning) {
     SDL_Event ev;
     SDL_PollEvent(&ev);
     switch (ev.type) {
@@ -102,6 +118,25 @@ void processInput(int *gameRunning) {
     case SDL_KEYDOWN: {
         if (ev.key.keysym.sym == SDLK_ESCAPE)
             *gameRunning = FALSE;
+        if (ev.key.keysym.sym ==  SDLK_w)
+            player.walkDirection = +1;
+        if (ev.key.keysym.sym ==  SDLK_s)
+            player.walkDirection = -1;
+        if (ev.key.keysym.sym ==  SDLK_a)
+            player.turnDirection = +1;
+        if (ev.key.keysym.sym ==  SDLK_d)
+            player.turnDirection = -1;
+        break;
+    }
+    case SDL_KEYUP: {
+        if (ev.key.keysym.sym == SDLK_w)
+            player.walkDirection = 0;
+        if (ev.key.keysym.sym == SDLK_s)
+            player.walkDirection = 0;
+        if (ev.key.keysym.sym ==  SDLK_a)
+            player.turnDirection = 0;
+        if (ev.key.keysym.sym == SDLK_d)
+            player.turnDirection = 0;
         break;
     }
     }
@@ -115,7 +150,7 @@ void playerConstructor() {
     player.turnDirection = 0;
     player.walkDirection = 0;
     player.angle = PI / 2;
-    player.walkSpeed = 100;
+    player.walkSpeed = 50;
     player.turnSpeed = 45 * (PI / 180);
 }
 
@@ -129,4 +164,21 @@ void update() {
 
     float deltaTime = (SDL_GetTicks() - lastFrameT)/1000.0f;
     lastFrameT = SDL_GetTicks();
+
+    movePlayer(deltaTime);
+}
+
+void render() {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    //SDL_Rect rect = { playerX, playerY, 20, 20 };
+
+    renderMap();
+    renderPlayer();
+    //renderRays();
+
+    //SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderPresent(renderer);
 }

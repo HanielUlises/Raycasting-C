@@ -2,9 +2,11 @@
 
 int main(int argc, char** argv) {
 	int gameRunning = initializeWindow();
-
+	
+	playerConstructor();
+	printf("Game running\n");
 	while (gameRunning) {
-		processInput(&gameRunning);
+		handleEvents(&gameRunning);
 		update();
 		render();
 	}
