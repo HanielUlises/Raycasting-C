@@ -114,6 +114,139 @@ void renderPlayer() {
     );
 }
 
+float normalize(float angle) {
+    float normalizedAngle = remainder(angle, PI2);
+    if (normalizedAngle < 0) {
+        angle = PI2 + angle;
+    }
+    return angle;
+}
+
+float distanceBetweenPoints(float x1, float y1, float x2, float y2) {
+    return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+// Casts a single ray
+void castRay(float rayAngle, int stripId) {
+    rayAngle = normalize(rayAngle);
+    
+    int rayFacingDown = rayAngle > 0 && rayAngle < PI;
+    int rayFacingUp = !rayFacingDown;
+    
+    int rayFacingRight = rayAngle < 0.5 * PI || rayAngle > 1.5 * PI;
+    int rayFacingLeft = !rayFacingRight;
+
+    float xIntercept, yIntercept;
+    float xStep, yStep;
+
+    int isHorizontalWallHit = FALSE;
+    int horizontalWallGrid = 0;
+    float horizontalWallHitX = 0;
+    float horizontalWallHitY = 0;
+
+    yIntercept = floor(player.y / TILE_SIZE) * TILE_SIZE;
+    yIntercept += rayFacingDown ? TILE_SIZE : 0;
+     
+    xIntercept = player.x + (yIntercept - player.y) / tan(rayAngle);
+
+    yStep = TILE_SIZE;
+    yStep *= rayFacingUp ? -1 : 1;
+
+    xStep = TILE_SIZE / tan(rayAngle);
+    xStep *= (rayFacingLeft && xStep > 0) ? -1 : 1;
+    xStep *= (rayFacingRight && xStep < 0) ? -1 : 1;
+
+    float nextHorizontalTouchX = xIntercept;
+    float nextHorizontalTouchY = yIntercept;
+
+    while (nextHorizontalTouchX >= 0 && nextHorizontalTouchX <= WINDOW_WIDTH && nextHorizontalTouchY >= 0 && nextHorizontalTouchY <= WINDOW_HEIGHT) {
+        float xToCheck = nextHorizontalTouchX;
+        float yToCheck = nextHorizontalTouchY + (rayFacingUp ? -1 : 0);
+
+        if (wallExists(xToCheck, yToCheck)){
+            horizontalWallHitX = nextHorizontalTouchX;
+            horizontalWallHitY = nextHorizontalTouchY;
+            horizontalWallGrid = map[(int)floor(yToCheck / TILE_SIZE)][(int)floor(xToCheck / TILE_SIZE)];
+            isHorizontalWallHit = TRUE;
+            break;
+        }else {
+            nextHorizontalTouchX += xStep;
+            nextHorizontalTouchY += yStep;
+        }
+    }
+
+    int isVerticalWallHit = FALSE;
+    int verticalWallGrid = 0;
+    float verticalWallHitX = 0;
+    float verticalWallHitY = 0;
+
+    xIntercept = floor(player.x / TILE_SIZE) * TILE_SIZE;
+    xIntercept += rayFacingRight ? TILE_SIZE : 0;
+
+    yIntercept = player.y + (xIntercept - player.x) / tan(rayAngle);
+
+    xStep = TILE_SIZE;
+    xStep *= rayFacingLeft ? -1 : 1;
+
+    yStep = TILE_SIZE / tan(rayAngle);
+    yStep *= (rayFacingUp && xStep > 0) ? -1 : 1;
+    yStep *= (rayFacingDown && xStep < 0) ? -1 : 1;
+
+    float nextVerticalTouchX = xIntercept;
+    float nextVerticalTouchY = yIntercept;
+
+    while (nextVerticalTouchX >= 0 && nextVerticalTouchX <= WINDOW_WIDTH && nextVerticalTouchY >= 0 && nextVerticalTouchY <= WINDOW_HEIGHT) {
+        float xToCheck = nextVerticalTouchX + (rayFacingLeft ? -1 : 0);
+        float yToCheck = nextVerticalTouchY;
+
+        if (wallExists(xToCheck, yToCheck)) {
+            verticalWallHitX = nextVerticalTouchX;
+            verticalWallHitY = nextVerticalTouchY;
+            verticalWallGrid = map[(int)floor(yToCheck / TILE_SIZE)][(int)floor(xToCheck / TILE_SIZE)];
+            isVerticalWallHit = TRUE;
+            break;
+        }
+        else {
+            nextVerticalTouchX += xStep;
+            nextVerticalTouchY += yStep;
+        }
+    }
+    
+    float horizontalHitDistance = isHorizontalWallHit ? distanceBetweenPoints(player.x, player.y, horizontalWallHitX, horizontalWallHitY) : INT_MAX;
+    float verticalHitDistance = isVerticalWallHit ? distanceBetweenPoints(player.x, player.y, verticalWallHitX, verticalWallHitY) : INT_MAX;
+
+    // Keep the closest distance
+    if (verticalHitDistance < horizontalHitDistance) {
+        rays[stripId].distance = verticalHitDistance;
+        rays[stripId].wallHitX = verticalWallHitX;
+        rays[stripId].wallHitY = verticalWallHitY;
+        rays[stripId].wallHitGrid = verticalWallGrid;
+
+        rays[stripId].verticalHit = TRUE;
+    }else {
+        rays[stripId].distance = horizontalHitDistance;
+        rays[stripId].wallHitX = horizontalWallHitX;
+        rays[stripId].wallHitY = horizontalWallHitY;
+        rays[stripId].wallHitGrid = horizontalWallGrid;
+
+        rays[stripId].verticalHit = TRUE;
+    }
+    rays[stripId].angle = rayAngle;
+    rays[stripId].rayFacingUp = rayFacingUp;
+    rays[stripId].rayFacingDown = rayFacingDown;
+    rays[stripId].rayFacingLeft = rayFacingLeft;
+    rays[stripId].rayFacingRight = rayFacingRight;
+}
+
+void castRays() {
+    float rayAngle = player.angle - (FOV_ANGLE / 2);
+
+    for (int strip = 0; strip < NUM_RAYS; strip++) {
+        castRay(rayAngle, strip);
+
+        rayAngle += FOV_ANGLE / NUM_RAYS;
+    }
+}
 void renderMap() {
     for (int i = 0; i < NUM_ROWS; i++) {
         for (int j = 0; j < NUM_COLS; j++) {
@@ -180,6 +313,7 @@ void update() {
     lastFrameT = SDL_GetTicks();
 
     movePlayer(deltaTime);
+    castRays();
 }
 
 void render() {

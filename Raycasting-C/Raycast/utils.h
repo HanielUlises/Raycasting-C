@@ -4,6 +4,8 @@
 #pragma once
 
 #include "stdio.h"
+#include "limits.h"
+
 #include "SDL.h"
 
 #define PI 3.1415926535
@@ -19,7 +21,7 @@
 #define WINDOW_WIDTH (NUM_COLS * TILE_SIZE)
 #define WINDOW_HEIGHT (NUM_ROWS * TILE_SIZE)
 
-#define NUM_RAY WINDOW_WIDTH
+#define NUM_RAYS WINDOW_WIDTH
 #define FOV_ANGLE (60 * (PI/180))
 #define FPS 30
 #define FRAME_TIME_LENGTH (1000/FPS)
@@ -44,6 +46,18 @@ struct Player{
     float turnSpeed;
 }player;
 
+struct Ray {
+    float angle;    // Ray angle
+    float wallHitX;
+    float wallHitY;
+    float distance; // Distance from wall to player
+    int verticalHit;
+    int rayFacingUp;
+    int rayFacingDown;
+    int rayFacingLeft;
+    int rayFacingRight;
+    int wallHitGrid;
+}rays [NUM_RAYS];
 
 int initializeWindow();
 void destroyWindow();
@@ -55,8 +69,9 @@ void movePlayer(float);
 
 void handleEvents(int*);
 void playerConstructor();
+void castRays();
 
 // Determines if there's a wall at the player's position
-// Important for collition
+// Important for collision
 int wallExists(float x, float y);
 #endif
