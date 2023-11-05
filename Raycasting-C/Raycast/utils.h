@@ -28,6 +28,8 @@
 
 #define SCALE 0.3   // Minimap proportion
 
+#define FLT_MAX 1E+37
+
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 

@@ -129,10 +129,10 @@ float distanceBetweenPoints(float x1, float y1, float x2, float y2) {
 // Casts a single ray
 void castRay(float rayAngle, int stripId) {
     rayAngle = normalize(rayAngle);
-    
+
     int rayFacingDown = rayAngle > 0 && rayAngle < PI;
     int rayFacingUp = !rayFacingDown;
-    
+
     int rayFacingRight = rayAngle < 0.5 * PI || rayAngle > 1.5 * PI;
     int rayFacingLeft = !rayFacingRight;
 
@@ -146,7 +146,7 @@ void castRay(float rayAngle, int stripId) {
 
     yIntercept = floor(player.y / TILE_SIZE) * TILE_SIZE;
     yIntercept += rayFacingDown ? TILE_SIZE : 0;
-     
+
     xIntercept = player.x + (yIntercept - player.y) / tan(rayAngle);
 
     yStep = TILE_SIZE;
@@ -163,13 +163,14 @@ void castRay(float rayAngle, int stripId) {
         float xToCheck = nextHorizontalTouchX;
         float yToCheck = nextHorizontalTouchY + (rayFacingUp ? -1 : 0);
 
-        if (wallExists(xToCheck, yToCheck)){
+        if (wallExists(xToCheck, yToCheck)) {
             horizontalWallHitX = nextHorizontalTouchX;
             horizontalWallHitY = nextHorizontalTouchY;
             horizontalWallGrid = map[(int)floor(yToCheck / TILE_SIZE)][(int)floor(xToCheck / TILE_SIZE)];
             isHorizontalWallHit = TRUE;
             break;
-        }else {
+        }
+        else {
             nextHorizontalTouchX += xStep;
             nextHorizontalTouchY += yStep;
         }
@@ -189,8 +190,8 @@ void castRay(float rayAngle, int stripId) {
     xStep *= rayFacingLeft ? -1 : 1;
 
     yStep = TILE_SIZE * tan(rayAngle);
-    yStep *= (rayFacingUp && xStep > 0) ? -1 : 1;
-    yStep *= (rayFacingDown && xStep < 0) ? -1 : 1;
+    yStep *= (rayFacingUp && yStep > 0) ? -1 : 1;
+    yStep *= (rayFacingDown && yStep < 0) ? -1 : 1;
 
     float nextVerticalTouchX = xIntercept;
     float nextVerticalTouchY = yIntercept;
@@ -211,9 +212,9 @@ void castRay(float rayAngle, int stripId) {
             nextVerticalTouchY += yStep;
         }
     }
-    
-    float horizontalHitDistance = isHorizontalWallHit ? distanceBetweenPoints(player.x, player.y, horizontalWallHitX, horizontalWallHitY) : INT_MAX;
-    float verticalHitDistance = isVerticalWallHit ? distanceBetweenPoints(player.x, player.y, verticalWallHitX, verticalWallHitY) : INT_MAX;
+
+    float horizontalHitDistance = isHorizontalWallHit ? distanceBetweenPoints(player.x, player.y, horizontalWallHitX, horizontalWallHitY) : FLT_MAX;
+    float verticalHitDistance = isVerticalWallHit ? distanceBetweenPoints(player.x, player.y, verticalWallHitX, verticalWallHitY) : FLT_MAX;
 
     // Keep the closest distance
     if (verticalHitDistance < horizontalHitDistance) {
@@ -223,17 +224,18 @@ void castRay(float rayAngle, int stripId) {
         rays[stripId].wallHitGrid = verticalWallGrid;
 
         rays[stripId].verticalHit = TRUE;
-    }else {
+    }
+    else {
         rays[stripId].distance = horizontalHitDistance;
         rays[stripId].wallHitX = horizontalWallHitX;
         rays[stripId].wallHitY = horizontalWallHitY;
         rays[stripId].wallHitGrid = horizontalWallGrid;
 
-        rays[stripId].verticalHit = TRUE;
+        rays[stripId].verticalHit = FALSE;
     }
     rays[stripId].angle = rayAngle;
-    rays[stripId].rayFacingUp = rayFacingUp;
     rays[stripId].rayFacingDown = rayFacingDown;
+    rays[stripId].rayFacingUp = rayFacingUp;
     rays[stripId].rayFacingLeft = rayFacingLeft;
     rays[stripId].rayFacingRight = rayFacingRight;
 }
@@ -334,12 +336,10 @@ void render() {
     SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    //SDL_Rect rect = { playerX, playerY, 20, 20 };
 
     renderMap();
-    renderPlayer();
     renderRays();
+    renderPlayer();
 
-    //SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
 }
