@@ -65,6 +65,7 @@ void destroyWindow();
 void render();
 void renderMap();
 void renderPlayer();
+void renderRays();
 void movePlayer(float);
 
 void handleEvents(int*);

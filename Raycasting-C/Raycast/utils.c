@@ -183,12 +183,12 @@ void castRay(float rayAngle, int stripId) {
     xIntercept = floor(player.x / TILE_SIZE) * TILE_SIZE;
     xIntercept += rayFacingRight ? TILE_SIZE : 0;
 
-    yIntercept = player.y + (xIntercept - player.x) / tan(rayAngle);
+    yIntercept = player.y + (xIntercept - player.x) * tan(rayAngle);
 
     xStep = TILE_SIZE;
     xStep *= rayFacingLeft ? -1 : 1;
 
-    yStep = TILE_SIZE / tan(rayAngle);
+    yStep = TILE_SIZE * tan(rayAngle);
     yStep *= (rayFacingUp && xStep > 0) ? -1 : 1;
     yStep *= (rayFacingDown && xStep < 0) ? -1 : 1;
 
@@ -266,6 +266,19 @@ void renderMap() {
     }
 }
 
+void renderRays() {
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    for (int i = 0; i < NUM_RAYS; i++) {
+        SDL_RenderDrawLine(
+            renderer,
+            SCALE * player.x,
+            SCALE * player.y,
+            SCALE * rays[i].wallHitX,
+            SCALE * rays[i].wallHitY
+        );
+    }
+}
+
 void handleEvents(int *gameRunning) {
     SDL_Event ev;
     SDL_PollEvent(&ev);
@@ -325,7 +338,7 @@ void render() {
 
     renderMap();
     renderPlayer();
-    //renderRays();
+    renderRays();
 
     //SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
